@@ -84,12 +84,19 @@ ggplot(filter(DownloadThroughput, room != 'help desk'),aes( x=hour,y=downloadThr
 ggplot(UploadThroughput,aes( x=hour,y=uploadThroughput))+geom_point()+ggtitle("Upload Speed Measurements by Classroom, by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")
 
 ### Fig. 22 - Distribution of Upload Speed Measurements by Hour of the Day, Classrooms Only, Faceted by School Type
-ggplot(filter(UploadThroughput, room != 'help desk'),aes( x=hour,y=uploadThroughput))+geom_point()+facet_grid(grade_level~.)+ggtitle("Upload Speed Measurements by Classroom, by Hour")+labs(x="Day of the Week",y="Upload Throughput (Mbps)")
+ggplot(filter(UploadThroughput, room != 'help desk'),aes( x=hour,y=uploadThroughput))+geom_point()+facet_grid(grade_level~.)+ggtitle("Upload Speed Measurements by Classroom, by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")
 
 ### Fig. 23 - Distribution of Upload Speed Measurements by Hour of the Day, Help Desk
 ggplot(filter(UploadThroughput, room == 'help desk'),aes( x=hour,y=uploadThroughput))+geom_point()+ggtitle("Upload Speed Measurements, Help Desk, by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")
 
+### Fig. 24 - Distribution of Upload Speeds by Hour of the Day, Faceted by School Type
+ggplot(UploadThroughput,aes( x=hour,y=uploadThroughput))+geom_smooth(se=F)+geom_point()+facet_grid(room~grade_level)+ggtitle("Upload Speed Measurements by Hour, Faceted by Grade Level and Room")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")
 
+# Numerical Data Summaries, limiting to classroom measurements only
+summary(filter(DL_initial_summary,room != 'help desk'))
+summary(filter(UL_initial_summary,room != 'help desk'))
+summary(filter(RTT_initial_summary,room != 'help desk'))
+summary(filter(PRR_initial_summary,room != 'help desk'))
 
 ##-- scratch pad below 
 
