@@ -2,11 +2,15 @@
 require(ggplot2)
 library(dplyr)
 
+## Load cleaned data 
+raw_and_calc_metrics_withmeta_cleaned = read.csv("<your system path to>/bb-schools-analysis/raw-data/ACPS-raw-data_metrics-calculated_with-metadata_cleaned.csv")
+
 ## Numerical Summaries
 
 ### Fig. 1 - Calculate the 25th and 75th Percentile Values for Each Metric
-quantile(DownloadThroughput$downloadThroughput, c(.25,.75))
-quantile(UploadThroughput$uploadThroughput, c(.25,.75))
+quantile(raw_and_calc_metrics_withmeta_cleaned$downloadThroughput, c(.25,.75),na.rm=TRUE)
+quantile(raw_and_calc_metrics_withmeta_cleaned$uploadThroughput, c(.25,.75),na.rm=TRUE)
+
 quantile(RoundTripTime$min_rtt, c(.25,.75))
 quantile(PacketRetransmissionRate$packet_retransmission_rate, c(.25,.75))
 
