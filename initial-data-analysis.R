@@ -5,6 +5,7 @@
 ### Load required R packages
 require(ggplot2)
 library(dplyr)
+require(gridExtra)
 
 ### Import all cleaned data 
 all_cleaned_data = read.csv("raw-data/ACPS-raw-data_metrics-calculated_with-metadata_cleaned.csv")
@@ -101,40 +102,64 @@ plot(sort(filter(all_cleaned_data, room == 'help desk')$packetRetransRate),pch="
 ## Charts Referenced in Measuring Broadband in Schools Paper
 
 ### Figure 1 - Download Speed Measurements by Hour, Faceted by Grade Level and Room
-ggplot(all_cleaned_data,aes(x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+facet_grid(room~grade_level)+ggtitle("Download Speed Measurements by Hour, Faceted by Grade Level and Room")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")
+figure1<-ggplot(all_cleaned_data,aes(x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+facet_wrap(~room+grade_level,ncol=1)+ggtitle("Download Speed Measurements by Hour, Faceted by Grade Level and Room")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")
+ggsave(file="graphs/fig1.svg", plot=figure1)
 
 ### Figure 2 - High School Classroom B323 - Download Speeds by Hour
-ggplot(filter(all_cleaned_data, room == 'B323'),aes(x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+facet_grid(room~.)+ggtitle("Download Speed Measurements, \nHigh School Classroom B323, by Hour")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")
+figure2<-ggplot(filter(all_cleaned_data, room == 'B323'),aes(x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+facet_grid(room~.)+ggtitle("Download Speed Measurements, \nHigh School Classroom B323, by Hour")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig2.svg", plot=figure2)
 
 ### Figure 3 - Upload Speed Measurements by Hour of the Day, Classrooms Only, Faceted by School Type
-ggplot(filter(all_cleaned_data, room != 'help desk' & uploadThroughput <= 100),aes( x=hour,y=uploadThroughput))+ylim(0,100)+geom_smooth(se=F)+geom_point()+facet_grid(grade_level~.)+ggtitle("Upload Speed Measurements by Classroom, by Hour, \nLimited to Measurements Below 100 Mbps")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")
+figure3<-ggplot(filter(all_cleaned_data, room != 'help desk' & uploadThroughput <= 100),aes( x=hour,y=uploadThroughput))+ylim(0,100)+geom_smooth(se=F)+geom_point()+facet_grid(grade_level~.)+ggtitle("Upload Speed Measurements by Classroom, by Hour, \nLimited to Measurements Below 100 Mbps")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig3.svg", plot=figure3)
 
 ### Figure 4 - QoS Limited Download Speed Measurements by Hour
-ggplot(filter(all_cleaned_data, room != 'help desk' & room != 'B323'),aes( x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("QoS Limited Download Speed Measurements by Hour")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")
+figure4<-ggplot(filter(all_cleaned_data, room != 'help desk' & room != 'B323'),aes( x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("QoS Limited Download \n Speed Measurements by Hour")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig4.svg", plot=figure4)
 
 ### Figure 5 - Non-QoS Limited Download Speed Measurements by Hour
-ggplot(filter(all_cleaned_data, room == 'help desk'),aes(x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("Non-QoS Limited Download Speed Measurements by Hour")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")
+figure5<-ggplot(filter(all_cleaned_data, room == 'help desk'),aes(x=hour,y=downloadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("Non-QoS Limited Download \n Speed Measurements by Hour")+labs(x="Hour of the Day",y="Download Throughput (Mbps)")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig5.svg", plot=figure5)
+
+figs4_5<-grid.arrange(figure4,figure5,ncol=2)
+ggsave(file="graphs/figs4_5.svg", plot=figs4_5)
 
 ### Figure 6 - QoS Limited Upload Speed Measurements by Hour
-ggplot(filter(all_cleaned_data, room != 'help desk' & room != 'B323'),aes( x=hour,y=uploadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("QoS Limited Upload Speed Measurements by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")
+figure6<-ggplot(filter(all_cleaned_data, room != 'help desk' & room != 'B323'),aes( x=hour,y=uploadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("QoS Limited Upload \n Speed Measurements by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig6.svg", plot=figure6)
 
 ### Figure 7 - Non-QoS Limited Upload Speed Measurements by Hour
-ggplot(filter(all_cleaned_data, room == 'help desk'),aes( x=hour,y=uploadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("Non-QoS Limited Upload Speed Measurements by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")
+figure7<-ggplot(filter(all_cleaned_data, room == 'help desk'),aes( x=hour,y=uploadThroughput))+geom_smooth(se=F)+geom_point()+ggtitle("Non-QoS Limited Upload \n Speed Measurements by Hour")+labs(x="Hour of the Day",y="Upload Throughput (Mbps)")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig7.svg", plot=figure7)
+
+figs6_7<-grid.arrange(figure6,figure7,ncol=2)
+ggsave(file="graphs/figs6_7.svg", plot=figs6_7)
 
 ### Figure 8 - QoS Limited Download Measurements Indexed by MinRTT <= 20ms
-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data,minRTT <=20 & downloadThroughput <= 100))+ggtitle("QoS Limited Download Measurements \n Indexed by MinRTT <= 20ms")+labs(x="Download Speed (mbps)", y="Minimum Round Trip Time (ms)")
+figure8<-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data,minRTT <=20 & downloadThroughput <= 100))+ggtitle("QoS Limited Download Measurements \n Indexed by MinRTT <= 20ms")+labs(x="Download Speed (mbps)", y="Minimum Round Trip Time (ms)")+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,20)
+ggsave(file="graphs/fig8.svg", plot=figure8)
 
 ### Figure 9 - Non-QoS Limited Download Measurements Indexed by MinRTT <= 20ms
-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk' & minRTT <= 20))+ggtitle("Non-QoS Limited Download Measurements \n Indexed by MinRTT <= 20ms")+labs(x="Download Speed (mbps)", y="Minimum Round Trip Time (ms)")
+figure9<-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk' & minRTT <= 20))+ggtitle("Non-QoS Limited Download Measurements \n Indexed by MinRTT <= 20ms")+labs(x="Download Speed (mbps)", y="Minimum Round Trip Time (ms)")+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,20)
+ggsave(file="graphs/fig9.svg", plot=figure9)
+
+figs8_9<-grid.arrange(figure8,figure9,ncol=2)
+ggsave(file="graphs/figs8_9.svg", plot=figs8_9)
 
 ### Figure 10 - QoS Limited Upload Measurements Indexed by MinRTT <= 20ms
-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data,minRTT <=20 & uploadThroughput <= 75 & uploadThroughput >= 45))+ggtitle("QoS Limited Upload Measurements Indexed by Minimum RTT <= 20ms")+labs(x="Upload Speed (mbps)\n >= 45 mbps", y="Minimum Round Trip Time (ms) \n <= 20 ms")
+figure10<-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data,minRTT <=20 & uploadThroughput <= 75 & uploadThroughput >= 45))+ggtitle("QoS Limited Upload Measurements \n Indexed by Minimum RTT <= 20ms")+labs(x="Upload Speed (mbps)\n >= 45 mbps", y="Minimum Round Trip Time (ms) \n <= 20 ms")+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,20)
+ggsave(file="graphs/fig10.svg", plot=figure10)
 
 ### Figure 11 - Non-QoS Limited Upload Measurements Indexed by MinRTT <= 20ms
-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk' & minRTT <= 20))+ggtitle("Non-QoS Limited Upload Measurements \n Indexed by MinRTT <= 20ms")+labs(x="Upload Speed (mbps)", y="Minimum Round Trip Time (ms)")
+figure11<-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk' & minRTT <= 20))+ggtitle("Non-QoS Limited Upload Measurements \n Indexed by MinRTT <= 20ms")+labs(x="Upload Speed (mbps)", y="Minimum Round Trip Time (ms)")+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,20)
+ggsave(file="graphs/fig11.svg", plot=figure11)
+
+figs10_11<-grid.arrange(figure10,figure11,ncol=2)
+ggsave(file="graphs/figs10_11.svg", plot=figs10_11)
 
 ### Figure 12 - Average RTT / Minimum RTT for QoS Limited Download Measurements
-qplot(avgRTT,minRTT,data=filter(all_cleaned_data,minRTT <= 20 & avgRTT <=15 & downloadThroughput <= 100))+ggtitle("Average RTT / Minimum RTT\n for QoS Limited Download Measurements")+labs(x="Average RTT <= 15 ms", y="Minimum RTT <= 20 ms")
+figure12<-qplot(avgRTT,minRTT,data=filter(all_cleaned_data,minRTT <= 20 & avgRTT <=15 & downloadThroughput <= 100))+ggtitle("Average RTT / Minimum RTT\n for QoS Limited Download Measurements")+labs(x="Average RTT <= 15 ms", y="Minimum RTT <= 20 ms")+theme(plot.title = element_text(hjust = 0.5))
+ggsave(file="graphs/fig12.svg", plot=figure12)
 
 ### Add "Transit" column and populate with known M-Lab upstream transit providers by IP
 #### Add 'transit' column to the all_cleaned_data dataframe
@@ -150,13 +175,23 @@ transit_lookup_values <- c("XO","Cogent","Tata","GTT","GTT","Level3")
 all_cleaned_data$transit <- transit_lookup_values[match(all_cleaned_data$server_ip, transit_lookup_index)]
 
 ### Figure 13 - QoS Limited Download Speeds and MinRTT, Faceted by M-Lab Server/Upstream Transit Provider
-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data, room != 'help desk' & room != 'B323'))+facet_wrap(~transit)+ggtitle("QoS Limited Download Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")
+figure13<-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data, room != 'help desk' & room != 'B323'))+facet_wrap(~transit,ncol=1)+ggtitle("QoS Limited Download Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Download Throughput', y='Min RTT')+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,30)
+ggsave(file="graphs/fig13.svg", plot=figure13)
 
 ### Figure 14 - Non-QoS Limited Download Speeds and MinRTT, Faceted by M-Lab Server/Upstream Transit Provider
-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk'))+facet_wrap(~transit)+ggtitle("Non-QoS Limited Download Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Download Throughput', y='Min RTT')
+figure14<-qplot(downloadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk'))+facet_wrap(~transit,ncol=1)+ggtitle("Non-QoS Limited Download Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Download Throughput', y='Min RTT')+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,30)
+ggsave(file="graphs/fig14.svg", plot=figure14)
+
+figs13_14<-grid.arrange(figure13,figure14,ncol=2)
+ggsave(file="graphs/figs13_14.svg", plot=figs13_14)
 
 ### Figure 15 - QoS Limited Upload Speeds and MinRTT, Faceted by M-Lab Server/Upstream Transit Provider
-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data, room != 'help desk' & room != 'B323'))+facet_wrap(~transit)+ggtitle("QoS Limited Upload Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Upload Throughput', y='Min RTT')
+figure15<-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data, room != 'help desk' & room != 'B323'))+facet_wrap(~transit,ncol=1)+ggtitle("QoS Limited Upload Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Upload Throughput', y='Min RTT')+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,30)
+ggsave(file="graphs/fig15.svg", plot=figure15)
 
 ### Figure 16 - Non-QoS Limited Upload Speeds and MinRTT, Faceted by M-Lab Server/Upstream Transit Provider
-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk'))+facet_wrap(~transit)+ggtitle("Non-QoS Limited Upload Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Upload Throughput', y='Min RTT')
+figure16<-qplot(uploadThroughput,minRTT,data=filter(all_cleaned_data, room == 'help desk'))+facet_wrap(~transit,ncol=1)+ggtitle("Non-QoS Limited Upload Speeds and MinRTT\n Faceted by M-Lab Server/Upstream Transit Provider")+labs(x='Upload Throughput', y='Min RTT')+theme(plot.title = element_text(hjust = 0.5))+xlim(0,700)+ylim(0,30)
+ggsave(file="graphs/fig16.svg", plot=figure16)
+
+figs15_16<-grid.arrange(figure15,figure16,ncol=2)
+ggsave(file="graphs/figs15_16.svg", plot=figs15_16)
